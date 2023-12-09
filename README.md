@@ -11,7 +11,7 @@ wget -N https://raw.githubusercontent.com/ElitraProject/SNI-Checker/main/run.sh 
 
 ## Использование
 
-1. Получите список доменов, перейдя на [bgp.tools](bgp.tools)
+1. Получите список доменов, перейдя на [bgp.tools](https://bgp.tools)
 
 Пример:
   
