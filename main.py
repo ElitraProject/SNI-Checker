@@ -50,7 +50,7 @@ def check_tls_version(domain: str, timeout: float = 3.0) -> Optional[str]:
         with socket.create_connection((domain, 443), timeout=timeout) as sock:
             with ssl.create_default_context().wrap_socket(sock, server_hostname=domain) as s:
                 tls_version = s.version()
-                return tls_version if tls_version else "TLS version not available"
+                return tls_version if tls_version else "версия TLS недоступна"
     except ssl.SSLError as e:
         logging.error(f"Произошла ошибка SSL при проверке домена {domain}: {e}")
         return None
@@ -90,7 +90,7 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
     success_count = 0
     failed_count = 0
 
-    with tqdm(total=total_domains, desc='Pinging Domains', unit='Domain') as pbar:
+    with tqdm(total=total_domains, desc='Пингование доменов', unit='Domain') as pbar:
         for index, domain in enumerate(domains):
             if max_domains is not None and index >= max_domains:
                 break  # Exit the loop if the maximum number of domains has been reached
@@ -121,7 +121,7 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
                 logging.error(f"Произошла ошибка при проверке домена {domain}: {e}")
                 failed_count += 1
 
-            pbar.set_description(f"Pinging: {domain} ({index+1}/{total_domains})")
+            pbar.set_description(f"Пингование: {domain} ({index+1}/{total_domains})")
             pbar.set_postfix({'Подходящих': success_count, 'Неподходящих': failed_count})
             pbar.update(1)
 
@@ -170,5 +170,5 @@ if __name__ == '__main__':
     total_domains = len(domains) if max_domains is None else min(len(domains), max_domains)
 
     success_domains = ping_domains(domains, max_domains, total_domains, max_success)
-    print("Найдено подходящих доменов: ")
+    print("Найденные подходящие домены: ")
     print(success_domains)
