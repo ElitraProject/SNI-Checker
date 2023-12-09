@@ -52,13 +52,13 @@ def check_tls_version(domain: str, timeout: float = 3.0) -> Optional[str]:
                 tls_version = s.version()
                 return tls_version if tls_version else "TLS version not available"
     except ssl.SSLError as e:
-        logging.error(f"SSL error occurred while checking domain {domain}: {e}")
+        logging.error(f"Произошла ошибка SSL при проверке домена {domain}: {e}")
         return None
     except socket.error as e:
-        logging.error(f"Socket error occurred while checking domain {domain}: {e}")
+        logging.error(f"При проверке домена произошла ошибка сокета {domain}: {e}")
         return None
     except Exception as e:
-        logging.error(f"An error occurred while checking domain {domain}: {e}")
+        logging.error(f"Произошла ошибка при проверке домена {domain}: {e}")
         return None
 
 
@@ -78,10 +78,10 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
         A list of successful domains that responded to ping.
     """
     table = PrettyTable()
-    table.field_names = ['Domain', 'Ping Result (ms)', 'TLS Version']
+    table.field_names = ['Домен', 'Пинг (мс)', 'версия TLS']
 
     success_domains_table = PrettyTable()
-    success_domains_table.field_names = ['Domain', 'Ping Result (ms)', 'TLS Version']
+    success_domains_table.field_names = ['Домен', 'Пинг (мс)', 'версия TLS']
 
     # Get the directory path of the script
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -109,7 +109,7 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
                         output_file = os.path.join(script_dir, "Temp Domains Result.txt")
                         with open(output_file, "w") as file:
                             file.write(str(table))
-                            file.write("\n\nSuccessful Domains (TLSv1.3) until now:\n")
+                            file.write("\n\nПодходящие домены (TLSv1.3) на данный момент:\n")
                             file.write(str(success_domains_table))
                         if max_success is not None and success_count >= max_success:
                             break  # Exit the loop if the maximum number of successful domains has been found
@@ -118,15 +118,15 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
                 else:
                     failed_count += 1
             except Exception as e:
-                logging.error(f"An error occurred while checking domain {domain}: {e}")
+                logging.error(f"Произошла ошибка при проверке домена {domain}: {e}")
                 failed_count += 1
 
             pbar.set_description(f"Pinging: {domain} ({index+1}/{total_domains})")
-            pbar.set_postfix({'Success': success_count, 'Failed': failed_count})
+            pbar.set_postfix({'Подходящих': success_count, 'Неподходящих': failed_count})
             pbar.update(1)
 
     print(table)
-    print("\nSuccessful Domains (TLSv1.3):")
+    print("\nПодходящие домены (TLSv1.3):")
     print(success_domains_table)
 
     # Save result to a text file
@@ -137,7 +137,7 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
     with open(output_file, "w") as file:
         file.write(str(table))
         if success_domains:
-            file.write("\n\nSuccessful Domains (TLSv1.3):\n")
+            file.write("\n\nПодходящие домены (TLSv1.3):\n")
             file.write(str(success_domains_table))
 
     # Save only the successful domains (TLSv1.3) per line to a separate file
@@ -149,18 +149,18 @@ def ping_domains(domains: List[str], max_domains: Optional[int] = None, total_do
     return list(success_domains)
 
 if __name__ == '__main__':
-    file_path = input("Enter the path of the file to scan: ")
+    file_path = input("Введите путь до файла со списком доменов: ")
     domains = extract_domains(file_path)
 
     # Prompt the user for the number of domains to check
-    max_domains_input = input("Enter the number of domains to check (enter 'all' to check all domains): ")
+    max_domains_input = input("Введите количество доменов, которые нужно проверить (введите 'all' чтобы проверить все домены): ")
     if max_domains_input.lower() == 'all':
         max_domains = None  # Set to None to check all domains
     else:
         max_domains = int(max_domains_input)
 
     # Prompt the user for the maximum number of successful domains to find
-    max_success_input = input("Enter the maximum number of successful domains to find (enter 'all' to find all successful domains): ")
+    max_success_input = input("Введите количество подходящих доменов, которые нужно найти (введите 'all' чтобы вывести список всех подходящих): ")
     if max_success_input.lower() == 'all':
         max_success = None  # Set to None to find all successful domains
     else:
@@ -170,5 +170,5 @@ if __name__ == '__main__':
     total_domains = len(domains) if max_domains is None else min(len(domains), max_domains)
 
     success_domains = ping_domains(domains, max_domains, total_domains, max_success)
-    print("Successful Domains Found:")
+    print("Найдено подходящих доменов: ")
     print(success_domains)
